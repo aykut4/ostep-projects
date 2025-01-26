@@ -127,12 +127,13 @@ void request_serve_static(int fd, char *filename, int filesize) {
     close_or_die(srcfd);
     
     // put together response
-    sprintf(buf, ""
+    assert(snprintf(buf, MAXBUF,
 	    "HTTP/1.0 200 OK\r\n"
 	    "Server: OSTEP WebServer\r\n"
 	    "Content-Length: %d\r\n"
 	    "Content-Type: %s\r\n\r\n", 
-	    filesize, filetype);
+	    filesize, filetype) > 0
+    );
     
     write_or_die(fd, buf, strlen(buf));
     
