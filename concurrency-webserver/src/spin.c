@@ -4,8 +4,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
-
-#define MAXBUF (8192)
+#include "constants.h"
 
 //
 // This program is intended to help you test your web server.
@@ -20,21 +19,21 @@ double get_seconds() {
     return (double) ((double)t.tv_sec + (double)t.tv_usec / 1e6);
 }
 
-
 int main() {
     // Extract arguments
     double spin_for = 0.0;
     char *buf;
     if ((buf = getenv("QUERY_STRING")) != NULL) {
-	// just expecting a single number
-	spin_for = (double) atoi(buf);
+        // just expecting a single number
+        spin_for = (double) atoi(buf);
     }
 
     double t1 = get_seconds();
-    while ((get_seconds() - t1) < spin_for)
-	sleep(1);
+    while ((get_seconds() - t1) < spin_for) {
+        sleep(1);
+    }
     double t2 = get_seconds();
-    
+
     /* Make the response body */
     char content[MAXBUF];
     snprintf(content, MAXBUF,
@@ -43,13 +42,12 @@ int main() {
         "<p>I spun for %.2f seconds</p>\r\n",
         buf, t2 - t1
     );
-    
+
     /* Generate the HTTP response */
     printf("Content-Length: %lu\r\n", strlen(content));
     printf("Content-Type: text/html\r\n\r\n");
     printf("%s", content);
     fflush(stdout);
-    
+
     exit(0);
 }
-
