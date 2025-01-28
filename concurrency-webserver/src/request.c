@@ -1,6 +1,5 @@
 #include "io_helper.h"
 #include "request.h"
-#include "constants.h"
 
 //
 // Some of this code stolen from Bryant/O'Halloran

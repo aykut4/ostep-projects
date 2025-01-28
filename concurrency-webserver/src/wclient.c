@@ -20,10 +20,9 @@
 //
 
 #include "io_helper.h"
-#include "constants.h"
 
 // Send an HTTP request for the specified file 
-void client_send(int fd, char *filename) {
+void client_request(int fd, char *filename) {
     char buf[MAXBUF];
     char hostname[MAXBUF];
 
@@ -39,7 +38,7 @@ void client_send(int fd, char *filename) {
 }
 
 // Read the HTTP response and print it out
-void client_print(int fd) {
+void client_response(int fd) {
     char buf[MAXBUF];
     int n;
 
@@ -81,8 +80,8 @@ int main(int argc, char *argv[]) {
     /* Open a single connection to the specified host and port */
     clientfd = open_client_fd_or_die(host, port);
 
-    client_send(clientfd, filename);
-    client_print(clientfd);
+    client_request(clientfd, filename);
+    client_response(clientfd);
 
     close_or_die(clientfd);
 

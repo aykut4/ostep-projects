@@ -22,6 +22,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#define MAXBUF (8192)
+
 typedef struct sockaddr sockaddr_t;
 
 // useful here: gcc statement expressions
