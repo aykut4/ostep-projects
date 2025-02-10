@@ -20,10 +20,12 @@ queue* init_queue(int n) {
     return q;
 }
 
+// Return true when queue is full, otherwise false
 int check_queue_full(queue* q) {
     return q->cur_size >= q->max_size;
 }
 
+// Return true when queue is empty, otherwise false
 int check_queue_empty(queue* q) {
     return q->cur_size == 0;
 }
@@ -52,6 +54,8 @@ int dequeue_work_fifo(queue* q) {
 
 
 // Main scheduler functions
+
+// Initialize main scheduler
 scheduler* init_scheduler(int alg, int n) {
 
     scheduler* sch = (scheduler*)malloc(sizeof(scheduler));
@@ -66,14 +70,20 @@ scheduler* init_scheduler(int alg, int n) {
     return sch;
 }
 
+// Return true if buffer inside scheduler is full, otherwise false
 int check_scheduler_full(scheduler* sch) {
     return check_queue_full(sch->buf);
-} 
+}
 
+// Return true if buffer inside scheduler is empty, otherwise false
 int check_scheduler_empty(scheduler* sch) {
     return check_queue_empty(sch->buf);
 }
 
+// Insert a work for scheduler with fd
+// When scheduler buffer is full, waits until worker takes one
+// 
+// TODO: Sorting works based on file size when algorithm is SFF
 void insert_scheduler_work(scheduler* sch, thread_pool* pool, int fd) {
     pthread_mutex_lock(&pool->LOCK);
 
@@ -89,6 +99,8 @@ void insert_scheduler_work(scheduler* sch, thread_pool* pool, int fd) {
     pthread_mutex_unlock(&pool->LOCK);
 }
 
+// Get a work for scheduler with fd
+// When scheduler buffer is empty, waits until work is filled
 int get_scheduler_work(scheduler* sch, thread_pool* pool) {
     pthread_mutex_lock(&pool->LOCK);
 

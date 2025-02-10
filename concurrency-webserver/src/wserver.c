@@ -114,12 +114,11 @@ int main(int argc, char *argv[]) {
     // now, get to work
     listen_fd = open_listen_fd_or_die(port);
 
-    // Initiate thread pool
+    // Initiate thread pool & scheduler
     thread_pool* pool = init_thread_pool(num_thd);
-
-    // Initiate scheduler
     scheduler* sch = init_scheduler(schedalg, num_buf);
 
+    // Start thread workers
     start_thread_work(pool, sch);
 
     while (1) {
