@@ -2,7 +2,8 @@
 #include "request.h"
 #include "io_helper.h"
 
-#include "thread_pool.c"
+#include "thread_pool.h"
+#include "scheduler.h"
 
 //
 // TODO: Implement a more sophisticated client that can send simultaneous
@@ -62,9 +63,9 @@ int main(int argc, char *argv[]) {
     // Default thread number, 1
     int num_thd = 1;
     // Default buffer number, 1
-    //int num_buf = 1;
+    int num_buf = 1;
     // Fifo for 1, SFF for 0
-    //int schedalg = 1;
+    int schedalg = 1;
 
     int c;
     while ((c = getopt(argc, argv, "d:p:t:b:s:")) != -1) {
@@ -78,7 +79,6 @@ int main(int argc, char *argv[]) {
             case 't':
                 num_thd = atoi(optarg);
                 break;
-            /*
             case 'b':
                 num_buf = atoi(optarg);
                 break;
@@ -88,7 +88,6 @@ int main(int argc, char *argv[]) {
 		        else if (!strcmp(optarg, "SFF"))
 			        schedalg = 0;
                 break;
-            */
 			default:
 				fprintf(stderr, "usage: wserver [-d basedir] [-p port] [-t threads] [-b buffers] [-s schedalg]\n");
 				exit(1);
@@ -115,17 +114,21 @@ int main(int argc, char *argv[]) {
     // now, get to work
     listen_fd = open_listen_fd_or_die(port);
 
+    // Initiate thread pool
     thread_pool* pool = init_thread_pool(num_thd);
-    start_thread_work(pool, listen_fd);
+
+    // Initiate scheduler
+    scheduler* sch = init_scheduler(schedalg, num_buf);
+
+    start_thread_work(pool, sch);
 
     while (1) {
-        /*
+        
 		struct sockaddr_in client_addr;
 		int client_len = sizeof(client_addr);
 		int conn_fd = accept_or_die(listen_fd, (sockaddr_t *) &client_addr, (socklen_t *) &client_len);
-		request_handle(conn_fd);
-		close_or_die(conn_fd);
-        */
+
+        insert_scheduler_work(sch, pool, conn_fd);
     }
     return 0;
 }
